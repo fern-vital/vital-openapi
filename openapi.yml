@@ -3,7 +3,7 @@ info:
   title: api
   version: ''
 paths:
-  /summary/activity/{user_id}:
+  /v2/summary/activity/{user_id}:
     get:
       operationId: ActivityService.get
       tags:
@@ -80,7 +80,7 @@ paths:
       summary: Activity Summary
       security: &ref_0
         - ApiKeyAuth: []
-  /summary/activity/{user_id}/raw:
+  /v2/summary/activity/{user_id}/raw:
     get:
       operationId: ActivityService.get_raw
       tags:
@@ -303,5 +303,11 @@ components:
       in: header
       name: x-vital-api-key
 servers:
-  - url: https://api.tryvital.io/v2
-    description: Production
+  - url: https://api.tryvital.io/
+    description: US_Production
+  - url: https://api.eu.tryvital.io
+    description: EU_Production
+  - url: https://api.sandbox.tryvital.io
+    description: US_Sandbox
+  - url: https://api.sandbox.eu.tryvital.io
+    description: EU_Sandbox
