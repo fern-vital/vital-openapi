@@ -1,0 +1,303 @@
+openapi: 3.0.1
+info:
+  title: api
+  version: ''
+paths:
+  /summary/activity/{user_id}:
+    get:
+      operationId: ActivityService.summary
+      tags:
+        - Activity
+      parameters:
+        - name: user_id
+          in: path
+          description: >
+            User id returned by vital create user id request.  This id should be
+            stored in your database against the user and used for all
+            interactions with the vital api.
+          required: true
+          schema:
+            $ref: '#/components/schemas/UserId'
+          examples:
+            Example1:
+              value: 70c64d5a-ff06-4c16-b137-361b2441d86e
+        - name: provider
+          in: query
+          description: Provider like Oura, Strava, etc.
+          required: false
+          schema:
+            type: string
+          examples:
+            Example1:
+              value: Oura
+        - name: start_date
+          in: query
+          description: >-
+            Date from in YYYY-MM-DD or ISO formatted date time. If a date is
+            provided without a time, the time will be set to 00:00:00
+          required: true
+          schema:
+            type: string
+          examples:
+            Example1:
+              value: '2023-01-01'
+        - name: end_date
+          in: query
+          description: >-
+            Date to YYYY-MM-DD or ISO formatted date time. If a date is provided
+            without a time, the time will be set to 23:59:59
+          required: true
+          schema:
+            type: string
+          examples:
+            Example1:
+              value: '2023-01-25'
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ActivitySummaryResponse'
+              examples:
+                Example1:
+                  value:
+                    activity:
+                      - source:
+                          name: Oura
+                          slug: oura
+                          logo: >-
+                            https://cdn.shopify.com/s/files/1/0163/4644/7926/files/black-on-white-oura-logo.png?v=1584479070
+                        date: '2023-01-27'
+                        user_id: 70c64d5a-ff06-4c16-b137-361b2441d86e
+                        calories_total: 100
+                        calories_active: 2000
+                        steps: 10000
+                        daily_movement: 200
+                        low: 6400
+                        medium: 2000
+                        high: 4500
+      summary: Activity Summary
+      security: &ref_0
+        - XVitalApiKeyAuth: []
+  /summary/activity/{user_id}/raw:
+    get:
+      operationId: ActivityService.raw
+      tags:
+        - Activity
+      parameters:
+        - name: user_id
+          in: path
+          description: >
+            User id returned by vital create user id request.  This id should be
+            stored in your database against the user and used for all
+            interactions with the vital api.
+          required: true
+          schema:
+            $ref: '#/components/schemas/UserId'
+          examples:
+            Example1:
+              value: 70c64d5a-ff06-4c16-b137-361b2441d86e
+        - name: provider
+          in: query
+          description: Provider like Oura, Strava, etc.
+          required: false
+          schema:
+            type: string
+          examples:
+            Example1:
+              value: Oura
+        - name: start_date
+          in: query
+          description: >-
+            Date from in YYYY-MM-DD or ISO formatted date time. If a date is
+            provided without a time, the time will be set to 00:00:00
+          required: true
+          schema:
+            type: string
+          examples:
+            Example1:
+              value: '2023-01-01'
+        - name: end_date
+          in: query
+          description: >-
+            Date to YYYY-MM-DD or ISO formatted date time. If a date is provided
+            without a time, the time will be set to 23:59:59
+          required: true
+          schema:
+            type: string
+          examples:
+            Example1:
+              value: '2023-01-25'
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ActivitySummaryResponse'
+              examples:
+                Example1:
+                  value:
+                    activity:
+                      - source:
+                          name: Oura
+                          slug: oura
+                          logo: >-
+                            https://cdn.shopify.com/s/files/1/0163/4644/7926/files/black-on-white-oura-logo.png?v=1584479070
+                        date: '2023-01-27'
+                        user_id: 70c64d5a-ff06-4c16-b137-361b2441d86e
+                        calories_total: 100
+                        calories_active: 2000
+                        steps: 10000
+                        daily_movement: 200
+                        low: 6400
+                        medium: 2000
+                        high: 4500
+      summary: Raw Summary
+      security: *ref_0
+components:
+  schemas:
+    ActivitySummaryResponse:
+      type: object
+      properties:
+        activity:
+          type: array
+          items:
+            $ref: '#/components/schemas/ActivitySummary'
+      required:
+        - activity
+    ActivitySummary:
+      type: object
+      properties:
+        source:
+          $ref: '#/components/schemas/ActivitySource'
+          description: Source the data has come from.
+        date:
+          type: string
+          description: Date for specified record
+        user_id:
+          $ref: '#/components/schemas/UserId'
+          description: >-
+            < User id returned by vital create user request. This id should be
+            stored in your database against the user and used for all
+            interactions with the vital api.
+        user_key:
+          type: string
+          description: >-
+            < User key returned by vital create user key request. This key
+            should be stored in your database against the user and used for all
+            interactions with the vital api.
+        calories_total:
+          type: integer
+          description: >-
+            Total energy consumption during the day including Basal Metabolic
+            Rate in kilocalories::kilocalories
+        calories_active:
+          type: integer
+          description: >-
+            Energy consumption caused by the physical activity of the day in
+            kilocalories::kilocalories
+        steps:
+          type: integer
+          description: Total number of steps registered during the day::steps
+        daily_movement:
+          type: integer
+          description: >-
+            Daily physical activity as equal meters i.e. amount of walking
+            needed to get the same amount of activity::meters
+        low:
+          type: integer
+          description: >-
+            Number of minutes during the day with low intensity activity (e.g.
+            walking)::minutes
+        medium:
+          type: integer
+          description: >-
+            Number of minutes during the day with medium intensity activity
+            (e.g. walking)::minutes
+        high:
+          type: integer
+          description: >-
+            Number of minutes during the day with high intensity activity (e.g.
+            running)::minutes
+        floors_climbed:
+          type: integer
+          description: Number of floors climbed by the user::count
+        timezone_offset:
+          type: integer
+          description: >-
+            Timezone offset from UTC as minutes. For example, EEST (Eastern
+            European Summer Time, +3h) is 180. PST (Pacific Standard Time, -8h)
+            is -480
+      required:
+        - source
+        - date
+        - user_id
+    ActivitySource:
+      type: object
+      properties:
+        slug:
+          type: string
+          description: Slug for designated source
+        name:
+          type: string
+          description: Name of source of information
+        logo:
+          type: string
+          description: URL for source logo
+      required:
+        - slug
+        - name
+        - logo
+    RawActivityResponse:
+      type: object
+      properties:
+        activity:
+          type: array
+          items:
+            $ref: '#/components/schemas/RawActivity'
+      required:
+        - activity
+    RawActivity:
+      type: object
+      properties:
+        source:
+          $ref: '#/components/schemas/ActivitySource'
+          description: Provider
+        priority_id:
+          $ref: '#/components/schemas/PriorityId'
+        source_id:
+          $ref: '#/components/schemas/SourceId'
+        user_id:
+          $ref: '#/components/schemas/UserId'
+        provider_id:
+          $ref: '#/components/schemas/ProviderId'
+        timestampe:
+          type: string
+          format: date-time
+        data:
+          type: string
+      required:
+        - source
+        - priority_id
+        - source_id
+        - user_id
+        - provider_id
+        - timestampe
+    UserId:
+      type: string
+    PriorityId:
+      type: integer
+    SourceId:
+      type: integer
+    ProviderId:
+      type: string
+  securitySchemes:
+    XVitalApiKeyAuth:
+      type: apiKey
+      in: header
+      name: x-vital-api-key
+servers:
+  - url: https://api.tryvital.io/v2
+    description: Production
