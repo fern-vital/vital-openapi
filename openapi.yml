@@ -5,7 +5,7 @@ info:
 paths:
   /summary/activity/{user_id}:
     get:
-      operationId: ActivityService.summary
+      operationId: ActivityService.get
       tags:
         - Activity
       parameters:
@@ -46,7 +46,7 @@ paths:
           description: >-
             Date to YYYY-MM-DD or ISO formatted date time. If a date is provided
             without a time, the time will be set to 23:59:59
-          required: true
+          required: false
           schema:
             type: string
           examples:
@@ -58,7 +58,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ActivitySummaryResponse'
+                $ref: '#/components/schemas/ClientActivityResponse'
               examples:
                 Example1:
                   value:
@@ -79,10 +79,10 @@ paths:
                         high: 4500
       summary: Activity Summary
       security: &ref_0
-        - XVitalApiKeyAuth: []
+        - ApiKeyAuth: []
   /summary/activity/{user_id}/raw:
     get:
-      operationId: ActivityService.raw
+      operationId: ActivityService.get_raw
       tags:
         - Activity
       parameters:
@@ -135,12 +135,13 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/RawActivitySummaryResponse'
+                $ref: '#/components/schemas/ClientActivityRawResponse'
               examples:
                 Example1:
                   value:
                     activity:
-                      - source:
+                      - id: d5d81366-9f5d-11ed-a8fc-0242ac120002
+                        source:
                           name: Oura
                           slug: oura
                           logo: >-
@@ -156,20 +157,20 @@ paths:
       security: *ref_0
 components:
   schemas:
-    ActivitySummaryResponse:
+    ClientActivityResponse:
       type: object
       properties:
         activity:
           type: array
           items:
-            $ref: '#/components/schemas/ActivitySummary'
+            $ref: '#/components/schemas/ClientFacingActivity'
       required:
         - activity
-    ActivitySummary:
+    ClientFacingActivity:
       type: object
       properties:
         source:
-          $ref: '#/components/schemas/ActivitySource'
+          $ref: '#/components/schemas/Source'
           description: Source the data has come from.
         date:
           type: string
@@ -232,7 +233,55 @@ components:
         - source
         - date
         - user_id
-    ActivitySource:
+    ClientActivityRawResponse:
+      type: object
+      properties:
+        activity:
+          type: array
+          items:
+            $ref: '#/components/schemas/RawActivity'
+      required:
+        - activity
+    RawActivity:
+      type: object
+      properties:
+        id:
+          type: string
+        source:
+          $ref: '#/components/schemas/Source'
+          description: Provider
+        priority_id:
+          $ref: '#/components/schemas/PriorityId'
+        source_id:
+          $ref: '#/components/schemas/SourceId'
+        user_id:
+          $ref: '#/components/schemas/UserId'
+        provider_id:
+          $ref: '#/components/schemas/ProviderId'
+        timestamp:
+          type: string
+          format: date-time
+        data:
+          type: object
+          additionalProperties:
+            type: string
+      required:
+        - id
+        - priority_id
+        - source_id
+        - user_id
+        - provider_id
+        - timestamp
+        - data
+    UserId:
+      type: string
+    PriorityId:
+      type: integer
+    SourceId:
+      type: integer
+    ProviderId:
+      type: string
+    Source:
       type: object
       properties:
         slug:
@@ -248,58 +297,8 @@ components:
         - slug
         - name
         - logo
-    RawActivitySummaryResponse:
-      type: object
-      properties:
-        activity:
-          type: array
-          items:
-            $ref: '#/components/schemas/RawActivity'
-      required:
-        - activity
-    RawActivity:
-      type: object
-      properties:
-        source:
-          $ref: '#/components/schemas/ActivitySource'
-          description: Provider
-        priority_id:
-          $ref: '#/components/schemas/PriorityId'
-        source_id:
-          $ref: '#/components/schemas/SourceId'
-        user_id:
-          $ref: '#/components/schemas/UserId'
-        provider_id:
-          $ref: '#/components/schemas/ProviderId'
-        timestamp:
-          type: string
-          format: date-time
-        data:
-          $ref: '#/components/schemas/ActivityData'
-      required:
-        - source
-        - priority_id
-        - source_id
-        - user_id
-        - provider_id
-        - timestamp
-    ActivityData:
-      type: object
-      properties:
-        data:
-          type: string
-      required:
-        - data
-    UserId:
-      type: string
-    PriorityId:
-      type: integer
-    SourceId:
-      type: integer
-    ProviderId:
-      type: string
   securitySchemes:
-    XVitalApiKeyAuth:
+    ApiKeyAuth:
       type: apiKey
       in: header
       name: x-vital-api-key
