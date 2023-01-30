@@ -5,7 +5,7 @@ info:
 paths:
   /v2/summary/activity/{user_id}:
     get:
-      operationId: ActivityService.get
+      operationId: activityService.get
       tags:
         - Activity
       parameters:
@@ -82,7 +82,7 @@ paths:
         - ApiKeyAuth: []
   /v2/summary/activity/{user_id}/raw:
     get:
-      operationId: ActivityService.get_raw
+      operationId: activityService.get_raw
       tags:
         - Activity
       parameters:
